@@ -32,9 +32,6 @@ public class IldarAlgorithm implements iMainAlgorithm {
     private final static int STEP_BETWEEN_CALORIES = 100;
     private final static int QUEUE_SIZE = 50;
 
-    int count = 0;
-
-
     private ConcurrentHashMap<Integer, ArrayBlockingQueue<MenuDto>> threes;
     private ConcurrentHashMap<Integer, ArrayBlockingQueue<MenuDto>> fours;
     private ConcurrentHashMap<Integer, ArrayBlockingQueue<MenuDto>> fives;
@@ -47,7 +44,6 @@ public class IldarAlgorithm implements iMainAlgorithm {
 
         Thread t = new Thread(() -> {
             while (true) {
-                System.out.println("i start. doing...");
                 List<Dish> breakfasts = dishesService.findBreakfasts();
                 List<Dish> lunches = dishesService.findLunches();
                 List<Dish> dinners = dishesService.findDinners();
@@ -55,9 +51,6 @@ public class IldarAlgorithm implements iMainAlgorithm {
 
                 Menu menu = new Menu();
                 fillMenuMaps(List.of(breakfasts, lunches, dinners, snacks, snacks), 0, menu);
-//                fillMenuMaps(breakfasts, lunches, dinners, snacks, snacks, menu);
-                count = 0;
-                System.out.println("i finished. waiting...");
                 waitForAWhile();
             }
         });
@@ -71,8 +64,6 @@ public class IldarAlgorithm implements iMainAlgorithm {
 
         List<Dish> dishByCategory = menuList.get(index);
         for (Dish dish : dishByCategory) {
-            count++;
-            if (count % 1_000_000 == 0) System.out.println(count);
             menu.addDish(dishToDto(dish));
             switch (index + 1) {
                 case THREE_MEALS -> addMenuToMap(threes, menu);
