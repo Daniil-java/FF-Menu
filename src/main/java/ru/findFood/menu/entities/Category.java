@@ -2,31 +2,35 @@ package ru.findFood.menu.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "categories")
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "category_id")
+    private Long categoryId;
 
     @NotNull
     @Column(name = "title", nullable = false)
     private String title;
 
-/*    @OneToMany(mappedBy = "categories")
-    @JoinColumn(name = "dish_id", referencedColumnName = "id")
-    private List<Dish> dishes;*/
+    @OneToMany(mappedBy = "category")
+    @ToString.Exclude
+    private List<Dish> dishes;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -36,8 +40,20 @@ public class Category {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Category(String title, LocalDateTime createdAt){
+    public Category(@NotNull String title) {
         this.title = title;
-        this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Category category = (Category) o;
+        return getCategoryId() != null && Objects.equals(getCategoryId(), category.getCategoryId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

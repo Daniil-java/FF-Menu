@@ -2,20 +2,29 @@ package ru.findFood.menu.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 
 @Entity
 @Table(name = "dishes")
 @RequiredArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
+@Accessors(chain = true)
 public class Dish {
+
+    private final static int CALORIES_IN_PROTEIN = 4;
+    private final static int CALORIES_IN_FAT = 9;
+    private final static int CALORIES_IN_CARBOHYDRATE = 4;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +35,9 @@ public class Dish {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id")
+    @ToString.Exclude
     private Restaurant restaurant;
 
     @Column(name = "description")
@@ -36,8 +46,8 @@ public class Dish {
     @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name = "image_data")
-    private byte[] image;
+    @Column(name = "image_link")
+    private String imageLink;
 
     @Column(name = "calories", nullable = false)
     private Integer calories;
@@ -57,13 +67,14 @@ public class Dish {
     @Column(name = "healthy")
     private Boolean healthy;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "group_dish_id")
-    private GroupDish groupDish;
-
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
+
+    @Column(name = "used_last_time")
+    private LocalDateTime usedLastTime;
+
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -74,34 +85,26 @@ public class Dish {
     private LocalDateTime updatedAt;
 
 
-    //минимальный конструктор на всякий случай
-//    public Dish(String title) {
-//        this.title = title;
-//    }
-//
-
     //конструктор с обязательными полями
-    public Dish(String title, Integer calories, Integer proteins, Integer fats, Integer carbohydrates, LocalDateTime createdAt) {
+    public Dish(@NotNull String title, Integer proteins, Integer fats, Integer carbohydrates, Category category) {
         this.title = title;
-        this.calories = calories;
+        this.calories = proteins * CALORIES_IN_PROTEIN + fats * CALORIES_IN_FAT + carbohydrates * CALORIES_IN_CARBOHYDRATE;
         this.proteins = proteins;
         this.fats = fats;
         this.carbohydrates = carbohydrates;
-        this.createdAt = createdAt;
+        this.category = category;
     }
 
-//    //почти полный конструктор
-//    public Dish(String title, Long restaurant_id, String description, BigDecimal price, Integer calories, Integer proteins, Integer fats, Integer carbohydrates, GroupDish groupDish, List<Category> categories, LocalDateTime createdAt) {
-//        this.title = title;
-//        this.restaurant_id = restaurant_id;
-//        this.description = description;
-//        this.price = price;
-//        this.calories = calories;
-//        this.proteins = proteins;
-//        this.fats = fats;
-//        this.carbohydrates = carbohydrates;
-//        this.groupDish = groupDish;
-//        this.categories = categories;
-//        this.createdAt = createdAt;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Dish dish = (Dish) o;
+        return getId() != null && Objects.equals(getId(), dish.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -1,45 +1,30 @@
 package ru.findFood.menu.dtos;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@Accessors(chain = true)
-public class DishDto {      //Временное содержание файла. Неободимая для найстройки тестов
 
-    private Long id;
+public record DishDto(
+        Long id,
+        String title,
 
-    private String title;
+        Boolean healthy,
 
-    private Boolean healthy;
+        String restaurant,
 
-    private RestaurantDto restaurantDto;
+        String description,
 
-    private String description;
+        BigDecimal price,
 
-    private BigDecimal price;
+        Integer calories,
 
-    private byte[] image;
+        Integer proteins,
 
-    private Integer calories;
+        Integer fats,
 
-    private Integer proteins;
+        Integer carbohydrates,
 
-    private Integer fats;
+        Boolean approved,
 
-    private Integer carbohydrates;
-
-    private Boolean approved;
-
-//    private String groupDishDto.getTitle;
-    private GroupDishDto groupDishDto;
-
-    private CategoryDto categoryDto;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
+        String category
+) {
 }

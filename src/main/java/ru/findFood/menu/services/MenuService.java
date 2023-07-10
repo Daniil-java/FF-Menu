@@ -3,31 +3,17 @@ package ru.findFood.menu.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.findFood.menu.dtos.GoalDto;
-import ru.findFood.menu.entities.Menu;
-import ru.findFood.menu.repositories.MenuRepository;
+import ru.findFood.menu.dtos.MenuDto;
+import ru.findFood.menu.utils.IldarAlgorithm;
 
 @Service
 @RequiredArgsConstructor
-public class MenuService implements iMenuService{
 
-    private final MenuRepository menuRepository;
+public class MenuService {
 
-    @Override
-    public Menu makeMenu(GoalDto goalDto) {
-        Menu menu = new Menu();
-        return menu;
+    private final IldarAlgorithm algorithm;
+
+    public MenuDto getMenu(GoalDto goal) {
+        return algorithm.getMenu(goal);
     }
-
-    @Override
-    //Поиск из уже готовых меню, приближенных к цели клиента
-    public Menu getMenu(GoalDto goalDto) {
-        return null;
-    }
-
-    @Override
-    public void clearMenuTable() {
-        menuRepository.deleteAll();
-    }
-
-
 }
