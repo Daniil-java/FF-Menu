@@ -1,4 +1,4 @@
-package ru.findFood.menu.dtos;
+package ru.findFood.menu.dtos.notMvp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

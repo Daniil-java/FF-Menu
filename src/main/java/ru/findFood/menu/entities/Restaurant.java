@@ -35,12 +35,8 @@ public class Restaurant {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Restaurant(Long id) {
-        this.id = id;
-    }
 
-    public Restaurant(String title, LocalDateTime createdAt) {
+    public Restaurant(@NotNull String title) {
         this.title = title;
-        this.createdAt = createdAt;
     }
 }
