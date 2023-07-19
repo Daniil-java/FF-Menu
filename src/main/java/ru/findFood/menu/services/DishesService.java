@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.findFood.menu.dtos.DishDto;
 import ru.findFood.menu.entities.Dish;
+import ru.findFood.menu.exceprions.NotFoundException;
 import ru.findFood.menu.repositories.DishesRepository;
 
 import java.time.LocalDateTime;
@@ -54,7 +55,7 @@ public class DishesService {
     public void markDishesAsUsed(List<DishDto> dishes) {
         for (DishDto dishDto : dishes) {
             Optional<Dish> byId = dishesRepository.findById(dishDto.id());
-            Dish dish = byId.orElseThrow(() -> new RuntimeException("Unknown dish: " + dishDto));
+            Dish dish = byId.orElseThrow(() -> new NotFoundException(String.format("The dish '%s' is not exist!", dishDto)));
             dish.setUsedLastTime(LocalDateTime.now());
             dishesRepository.save(dish);
         }
