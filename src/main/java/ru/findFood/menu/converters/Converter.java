@@ -1,8 +1,9 @@
-package ru.findFood.menu.utils;
+package ru.findFood.menu.converters;
 
 import ru.findFood.menu.dtos.DishDto;
 import ru.findFood.menu.dtos.MenuDto;
 import ru.findFood.menu.entities.Dish;
+import ru.findFood.menu.utils.Menu;
 
 
 public class Converter {

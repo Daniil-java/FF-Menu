@@ -1,6 +1,7 @@
 package ru.findFood.menu.utils;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,12 +17,12 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static ru.findFood.menu.utils.Converter.dishToDto;
-import static ru.findFood.menu.utils.Converter.menuToDto;
+import static ru.findFood.menu.converters.Converter.dishToDto;
+import static ru.findFood.menu.converters.Converter.menuToDto;
 
 @Component
 @RequiredArgsConstructor
-
+@Slf4j
 public class IldarAlgorithm implements iMainAlgorithm {
     private final DishesService dishesService;
     private final static int FIVE_MEALS = 5;
@@ -93,7 +94,7 @@ public class IldarAlgorithm implements iMainAlgorithm {
         try {
             Thread.sleep(REFRESH_INTERVAL);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error(e.toString());
         }
     }
 
@@ -153,8 +154,11 @@ public class IldarAlgorithm implements iMainAlgorithm {
             case THREE_MEALS -> threes;
             case FOUR_MEALS -> fours;
             case FIVE_MEALS -> fives;
-            default ->
-                    throw new RuntimeException(String.format("The %d-times-a-day eating scheme is not supported", timesToEat));
+            default -> {
+                String exception = String.format("The %d-times-a-day eating scheme is not supported!", timesToEat);
+                log.error(exception);
+                throw new RuntimeException(exception);
+            }
         };
     }
 }
