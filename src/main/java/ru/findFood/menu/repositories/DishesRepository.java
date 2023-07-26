@@ -14,4 +14,5 @@ public interface DishesRepository extends JpaRepository<Dish, Long> {
     List<Dish> findByCategory(String category, Pageable pageable);
 
 
+    List<Dish> findByIdIn(List<Long> list);
 }
