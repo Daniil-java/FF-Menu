@@ -20,34 +20,34 @@ public class DishesService {
     private final DishesRepository dishesRepository;
 
     @Value("${dish.category.breakfast}")
-    private String BREAKFAST;
+    private String breakfast;
 
     @Value("${dish.category.lunch}")
-    private String LUNCH;
+    private String lunch;
 
     @Value("${dish.category.dinner}")
-    private String DINNER;
+    private String dinner;
 
     @Value("${dish.category.snack}")
-    private String SNACK;
+    private String snack;
 
 
     //Сделал тремя разными методами на случай если это будет три разных репозитория - мы еще не определились😁
     public List<Dish> findBreakfasts() {
-        return dishesRepository.findByCategory(BREAKFAST);
+        return dishesRepository.findByCategory(breakfast);
     }
 
     public List<Dish> findDinners() {
-        return dishesRepository.findByCategory(DINNER);
+        return dishesRepository.findByCategory(dinner);
     }
 
 
     public List<Dish> findLunches() {
-        return dishesRepository.findByCategory(LUNCH);
+        return dishesRepository.findByCategory(lunch);
     }
 
     public List<Dish> findSnack() {
-        return dishesRepository.findByCategory(SNACK);
+        return dishesRepository.findByCategory(snack);
     }
 
 
