@@ -22,10 +22,6 @@ import java.util.Objects;
 @Accessors(chain = true)
 public class Dish {
 
-    private final static int CALORIES_IN_PROTEIN = 4;
-    private final static int CALORIES_IN_FAT = 9;
-    private final static int CALORIES_IN_CARBOHYDRATE = 4;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -48,9 +44,6 @@ public class Dish {
 
     @Column(name = "image_link")
     private String imageLink;
-
-    @Column(name = "calories", nullable = false)
-    private Integer calories;
 
     @Column(name = "proteins", nullable = false)
     private Integer proteins;
@@ -88,7 +81,6 @@ public class Dish {
     //конструктор с обязательными полями
     public Dish(@NotNull String title, Integer proteins, Integer fats, Integer carbohydrates, Category category) {
         this.title = title;
-        this.calories = proteins * CALORIES_IN_PROTEIN + fats * CALORIES_IN_FAT + carbohydrates * CALORIES_IN_CARBOHYDRATE;
         this.proteins = proteins;
         this.fats = fats;
         this.carbohydrates = carbohydrates;
