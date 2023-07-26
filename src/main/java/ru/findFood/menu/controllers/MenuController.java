@@ -8,26 +8,35 @@ import ru.findFood.menu.integrations.PersonAreaServiceIntegration;
 import ru.findFood.menu.services.MenuService;
 
 @RestController
-@RequestMapping("/menu/v1/")
+@RequestMapping("/api/v1/menus")
 @RequiredArgsConstructor
 public class MenuController {
 
     private final MenuService menuService;
     private final PersonAreaServiceIntegration personAreaServiceIntegration;
+
+//    не вижу необходимости в этом эндпойнте, прошу подтвердить
     @GetMapping("/get_menu")
     public MenuDto getMenu(@RequestBody GoalDto goalDto) {
         return menuService.getMenu(goalDto);
     }
 
-    @GetMapping("/get_menu_by_telegram_name")
-    public MenuDto getMenuByTelegramName(@RequestHeader String username) {
-        GoalDto goal = personAreaServiceIntegration.getGoalByTelegramName(username);
+    @GetMapping("/all")
+    public MenuDto getMenuByName(
+            @RequestParam(required = false) String telegramName,
+            @RequestParam(required = false) String username) {
+        GoalDto goal = getGoalDto(telegramName, username);
         return menuService.getMenu(goal);
+
     }
 
-    @GetMapping("/get_menu_by_name")
-    public MenuDto getMenuByName(@RequestHeader String username) {
-        GoalDto goal = personAreaServiceIntegration.getGoalByName(username);
-        return menuService.getMenu(goal);
+    private GoalDto getGoalDto(String telegramName, String username) {
+        GoalDto goal;
+        if (telegramName != null) {
+            goal = personAreaServiceIntegration.getGoalByTelegramName(telegramName);
+        } else {
+            goal = personAreaServiceIntegration.getGoalByName(username);
+        }
+        return goal;
     }
 }
