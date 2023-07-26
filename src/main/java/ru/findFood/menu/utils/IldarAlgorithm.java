@@ -109,9 +109,7 @@ public class IldarAlgorithm implements iMainAlgorithm {
 
 
     private void markUsedDishes(MenuDto bestMenu) {
-
         dishesService.markDishesAsUsed(bestMenu.dishDtoList());
-
     }
 
     private MenuDto findClosestByPFC(List<MenuDto> menus, GoalDto goal) {

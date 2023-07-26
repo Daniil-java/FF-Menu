@@ -1,63 +1,71 @@
 package ru.findFood.menu.services;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.findFood.menu.dtos.DishDto;
 import ru.findFood.menu.entities.Dish;
-import ru.findFood.menu.exceprions.NotFoundException;
 import ru.findFood.menu.repositories.DishesRepository;
 
 import java.time.LocalDateTime;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class DishesService {
+    private static final int DISH_QUERY_LIMIT = 50;
+
     private final DishesRepository dishesRepository;
 
     @Value("${dish.category.breakfast}")
-    private String BREAKFAST;
+    private String breakfast;
 
     @Value("${dish.category.lunch}")
-    private String LUNCH;
+    private String lunch;
 
     @Value("${dish.category.dinner}")
-    private String DINNER;
+    private String dinner;
 
     @Value("${dish.category.snack}")
-    private String SNACK;
+    private String snack;
+
+    private Pageable pageable;
 
 
-    //Сделал тремя разными методами на случай если это будет три разных репозитория - мы еще не определились😁
+    @PostConstruct
+    public void init() {
+        pageable = PageRequest.of(0, DISH_QUERY_LIMIT);
+    }
+
     public List<Dish> findBreakfasts() {
-        return dishesRepository.findByCategory(BREAKFAST);
+        return dishesRepository.findByCategory(breakfast, pageable);
     }
 
     public List<Dish> findDinners() {
-        return dishesRepository.findByCategory(DINNER);
+        return dishesRepository.findByCategory(dinner, pageable);
     }
 
-
     public List<Dish> findLunches() {
-        return dishesRepository.findByCategory(LUNCH);
+        return dishesRepository.findByCategory(lunch, pageable);
     }
 
     public List<Dish> findSnack() {
-        return dishesRepository.findByCategory(SNACK);
+        return dishesRepository.findByCategory(snack, pageable);
     }
 
 
     @Transactional
     public void markDishesAsUsed(List<DishDto> dishes) {
-        for (DishDto dishDto : dishes) {
-            Optional<Dish> byId = dishesRepository.findById(dishDto.id());
-            Dish dish = byId.orElseThrow(() -> new NotFoundException(String.format("The dish '%s' is not exist!", dishDto)));
-            dish.setUsedLastTime(LocalDateTime.now());
-            dishesRepository.save(dish);
-        }
+        List<Dish> dishList = dishesRepository.findByIdIn(
+                dishes.stream()
+                        .map(DishDto::id)
+                        .toList());
+        dishList.forEach(dish -> dish.setUsedLastTime(LocalDateTime.now()));
+        dishesRepository.saveAll(dishList);
     }
 }
