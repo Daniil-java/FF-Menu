@@ -1,8 +1,11 @@
 package ru.findFood.menu.services;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.findFood.menu.dtos.DishDto;
 import ru.findFood.menu.entities.Dish;
@@ -17,6 +20,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class DishesService {
+    private static final int DISH_QUERY_LIMIT = 50;
+
     private final DishesRepository dishesRepository;
 
     @Value("${dish.category.breakfast}")
@@ -31,23 +36,28 @@ public class DishesService {
     @Value("${dish.category.snack}")
     private String snack;
 
+    private Pageable pageable;
 
-    //Сделал тремя разными методами на случай если это будет три разных репозитория - мы еще не определились😁
+
+    @PostConstruct
+    public void init() {
+        pageable = PageRequest.of(0, DISH_QUERY_LIMIT);
+    }
+
     public List<Dish> findBreakfasts() {
-        return dishesRepository.findByCategory(breakfast);
+        return dishesRepository.findByCategory(breakfast, pageable);
     }
 
     public List<Dish> findDinners() {
-        return dishesRepository.findByCategory(dinner);
+        return dishesRepository.findByCategory(dinner, pageable);
     }
 
-
     public List<Dish> findLunches() {
-        return dishesRepository.findByCategory(lunch);
+        return dishesRepository.findByCategory(lunch, pageable);
     }
 
     public List<Dish> findSnack() {
-        return dishesRepository.findByCategory(snack);
+        return dishesRepository.findByCategory(snack, pageable);
     }
 
 
