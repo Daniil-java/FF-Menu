@@ -1,26 +1,25 @@
 package ru.findFood.menu.services;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.findFood.menu.dtos.DishDto;
-import ru.findFood.menu.entities.Dish;
-import ru.findFood.menu.repositories.DishesRepository;
+import ru.findFood.menu.dtos.UpdateDishTimeRequest;
+import ru.findFood.menu.integrations.RestaurantsServiceIntegration;
 
 import java.time.LocalDateTime;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class DishesService {
     private static final int DISH_QUERY_LIMIT = 50;
 
-    private final DishesRepository dishesRepository;
+    private final RestaurantsServiceIntegration restaurantsSIP;
+
 
     @Value("${dish.category.breakfast}")
     private String breakfast;
@@ -34,38 +33,30 @@ public class DishesService {
     @Value("${dish.category.snack}")
     private String snack;
 
-    private Pageable pageable;
+    @Value("${integrations.restaurants-service.querySize}")
+    private String querySize;
 
-
-    @PostConstruct
-    public void init() {
-        pageable = PageRequest.of(0, DISH_QUERY_LIMIT);
+    public List<DishDto> findBreakfasts() {
+        System.out.println(querySize);
+        System.out.println(breakfast);
+        return restaurantsSIP.findByCategory(breakfast, querySize);
     }
 
-    public List<Dish> findBreakfasts() {
-        return dishesRepository.findByCategory(breakfast, pageable);
+    public List<DishDto> findDinners() {
+        return restaurantsSIP.findByCategory(dinner, querySize);
     }
 
-    public List<Dish> findDinners() {
-        return dishesRepository.findByCategory(dinner, pageable);
+    public List<DishDto> findLunches() {
+        return restaurantsSIP.findByCategory(lunch, querySize);
     }
 
-    public List<Dish> findLunches() {
-        return dishesRepository.findByCategory(lunch, pageable);
+    public List<DishDto> findSnack() {
+        return restaurantsSIP.findByCategory(snack, querySize);
     }
 
-    public List<Dish> findSnack() {
-        return dishesRepository.findByCategory(snack, pageable);
-    }
-
-
-    @Transactional
     public void markDishesAsUsed(List<DishDto> dishes) {
-        List<Dish> dishList = dishesRepository.findByIdIn(
-                dishes.stream()
-                        .map(DishDto::id)
-                        .toList());
-        dishList.forEach(dish -> dish.setUsedLastTime(LocalDateTime.now()));
-        dishesRepository.saveAll(dishList);
+        Map<Long, LocalDateTime> map = new HashMap<>();
+        dishes.forEach(dishDto -> map.put(dishDto.id(), LocalDateTime.now()));
+        restaurantsSIP.saveAll(new UpdateDishTimeRequest(map));
     }
 }

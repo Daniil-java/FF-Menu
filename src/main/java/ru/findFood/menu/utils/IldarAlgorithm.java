@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import ru.findFood.menu.dtos.DishDto;
 import ru.findFood.menu.dtos.GoalDto;
 import ru.findFood.menu.dtos.MenuDto;
 import ru.findFood.menu.entities.Dish;
@@ -45,10 +46,10 @@ public class IldarAlgorithm implements iMainAlgorithm {
 
         Thread t = new Thread(() -> {
             while (true) {
-                List<Dish> breakfasts = dishesService.findBreakfasts();
-                List<Dish> lunches = dishesService.findLunches();
-                List<Dish> dinners = dishesService.findDinners();
-                List<Dish> snacks = dishesService.findSnack();
+                List<DishDto> breakfasts = dishesService.findBreakfasts();
+                List<DishDto> lunches = dishesService.findLunches();
+                List<DishDto> dinners = dishesService.findDinners();
+                List<DishDto> snacks = dishesService.findSnack();
 
                 Menu menu = new Menu();
                 fillMenuMaps(List.of(breakfasts, lunches, dinners, snacks, snacks), 0, menu);
@@ -60,12 +61,12 @@ public class IldarAlgorithm implements iMainAlgorithm {
     }
 
     //Использовал рекурсию и бэктрекинг
-    private void fillMenuMaps(List<List<Dish>> menuList, int index, Menu menu) {
+    private void fillMenuMaps(List<List<DishDto>> menuList, int index, Menu menu) {
         if (index == menuList.size()) return;
 
-        List<Dish> dishByCategory = menuList.get(index);
-        for (Dish dish : dishByCategory) {
-            menu.addDish(dishToDto(dish));
+        List<DishDto> dishByCategory = menuList.get(index);
+        for (DishDto dish : dishByCategory) {
+            menu.addDish(dish);
             switch (index + 1) {
                 case THREE_MEALS -> addMenuToMap(threes, menu);
                 case FOUR_MEALS -> addMenuToMap(fours, menu);

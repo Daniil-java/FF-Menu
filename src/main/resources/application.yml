@@ -1,5 +1,5 @@
 server:
-  port: 8188
+  port: 8187
   servlet:
     context-path: /ff-menu
 spring:
@@ -32,8 +32,11 @@ dish:
     snack: Перекус
 
 integrations:
+  connect-timeout: 5000
+  read-timeout: 10000
+  write-timeout: 5000
   person-service:
-    url: http://localhost:8189
-    connect-timeout: 5000
-    read-timeout: 10000
-    write-timeout: 5000
+    url: http://localhost:8188
+  restaurants-service:
+    url: http://localhost:8189/ff-restaurants
+    querySize: 50

@@ -4,14 +4,11 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
-@ConfigurationProperties(prefix = "integrations.person-service")
+@ConfigurationProperties(prefix = "integrations")
 @Data
-public class PersonAreaServiceIntegrationProperties {
+public class ServicesIntegrationProperties {
 
-        private String url;
         private Integer connectTimeout;
         private Integer readTimeout;
         private Integer writeTimeout;
-
-
 }
