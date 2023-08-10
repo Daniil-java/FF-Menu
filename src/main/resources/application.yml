@@ -23,6 +23,10 @@ spring:
       path: /h2
       settings:
         web-allow-others: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 dish:
   category:
@@ -39,4 +43,6 @@ integrations:
     url: http://localhost:8188
   restaurants-service:
     url: http://localhost:8189/ff-restaurants
-    querySize: 50
+    querySize: 30
+
+

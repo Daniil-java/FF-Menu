@@ -5,6 +5,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatusCode;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import ru.findFood.menu.dtos.DishDto;
@@ -20,6 +22,7 @@ import ru.findFood.menu.exceprions.InnerRequestException;
 import ru.findFood.menu.exceprions.NotFoundException;
 import ru.findFood.menu.properties.ServicesIntegrationProperties;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +32,7 @@ import java.util.concurrent.TimeUnit;
         {ServicesIntegrationProperties.class}
 )
 @RequiredArgsConstructor
+@Slf4j
 public class RestaurantsServiceIntegration {
 
     private final ServicesIntegrationProperties sip;
@@ -38,7 +42,26 @@ public class RestaurantsServiceIntegration {
     private String restaurantServiceUrl;
 
     public List<DishDto> findByCategory(String category, String querySize) {
-        Object[] response = getWebClient()
+        Object[] response;
+        try {
+            response = getResponse(category, querySize);
+        } catch (WebClientException ce) {
+            log.warn("RestaurantService is not ready! Cant connect to RestaurantService server!");
+            return new ArrayList<>();
+        }
+
+        if (response != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            return Arrays.stream(response)
+                    .map(o -> mapper.convertValue(o, DishDto.class))
+                    .toList();
+
+        }
+        throw new NotFoundException("Couldn't find dishes!");
+    }
+
+    private Object[] getResponse(String category, String querySize) throws WebClientException {
+        return getWebClient()
                 .get()
                 .uri(
                         uriBuilder -> uriBuilder
@@ -54,21 +77,11 @@ public class RestaurantsServiceIntegration {
                         clientResponse -> clientResponse.bodyToMono(InnerRequestException.class)
                                 .map(body -> new InnerRequestException("Bad request from menu service to the restaurantsService:" + clientResponse)))
                 .onStatus(
-                        HttpStatusCode::is4xxClientError,
+                        HttpStatusCode::is5xxServerError,
                         clientResponse -> clientResponse.bodyToMono(InnerRequestException.class)
                                 .map(body -> new InnerRequestException("Something wrong on RestaurantsService side:" + clientResponse)))
                 .bodyToMono(Object[].class)
                 .block();
-
-
-        if (response != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            return Arrays.stream(response)
-                    .map(o -> mapper.convertValue(o, DishDto.class))
-                    .toList();
-
-        }
-        throw new NotFoundException("Couldn't find dishes!");
     }
 
     public void saveAll(UpdateDishTimeRequest request) {
