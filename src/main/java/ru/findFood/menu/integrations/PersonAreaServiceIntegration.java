@@ -39,14 +39,14 @@ public class PersonAreaServiceIntegration {
     }
 
     public GoalDto getGoalByName(String username) {
-        return getGoalDto(username, "/api/v1/persons/personByTelegramName");
+
+        return getGoalDto(username, "/api/v1/goals/app/");
     }
 
     private GoalDto getGoalDto(String username, String from) {
         return getWebClient()
                 .get()
-                .uri(personServiceUrl + from)
-                .header("username", username)
+                .uri(personServiceUrl + from + username)
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is4xxClientError,

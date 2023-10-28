@@ -45,13 +45,13 @@ public class DataGenerator {
     @Transactional
     public void generateData() {
         //Создаем рестораны
-        Restaurant restaurant1 = new Restaurant("Диетолог");
+        Restaurant restaurant1 = new Restaurant("Диета");
         restaurantRepository.save(restaurant1);
-        Restaurant restaurant2 = new Restaurant("Вкусно - и точка");
+        Restaurant restaurant2 = new Restaurant("Пиццерия");
         restaurantRepository.save(restaurant2);
-        Restaurant restaurant3 = new Restaurant("KFC");
+        Restaurant restaurant3 = new Restaurant("Стейкхаус");
         restaurantRepository.save(restaurant3);
-        Restaurant restaurant4 = new Restaurant("Burger King");
+        Restaurant restaurant4 = new Restaurant("Бургерная");
         restaurantRepository.save(restaurant4);
 
         List<Restaurant> restaurants = restaurantRepository.findAll();

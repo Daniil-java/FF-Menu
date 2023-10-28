@@ -40,7 +40,7 @@ integrations:
   read-timeout: 10000
   write-timeout: 5000
   person-service:
-    url: http://localhost:8188
+    url: http://localhost:8188/ff-personal
   restaurants-service:
     url: http://localhost:8189/ff-restaurants
     querySize: 30
