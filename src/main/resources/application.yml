@@ -1,0 +1,48 @@
+server:
+  port: 8187
+  servlet:
+    context-path: /ff-menu
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:findfoodDB;MODE=PostgreSQL
+    username: sa
+    password: sa
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        ddl-auto: none
+        temp:
+          use_jdbc_metadata_defaults: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2
+      settings:
+        web-allow-others: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+dish:
+  category:
+    breakfast: Завтрак
+    lunch: Обед
+    dinner: Ужин
+    snack: Перекус
+
+integrations:
+  connect-timeout: 5000
+  read-timeout: 10000
+  write-timeout: 5000
+  person-service:
+    url: http://localhost:8188/ff-personal
+  restaurants-service:
+    url: http://localhost:8189/ff-restaurants
+    querySize: 30
+
+
